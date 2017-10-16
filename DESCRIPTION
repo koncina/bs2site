@@ -1,0 +1,18 @@
+Package: bs2site
+Title: Build a teaching material website
+Version: 0.0.0.9000
+Authors@R: person("Eric", "Koncina", email = "mail@koncina.eu", role = c("aut", "cre"))
+Description: Contains the scaffold of the website and some helper functions.
+Imports:
+    readr,
+    purrr,
+    dplyr,
+    glue,
+    stringr,
+    utils
+Depends: R (>= 3.4.2)
+Suggests: rstudioapi
+License: LGPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
