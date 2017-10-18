@@ -3,8 +3,7 @@
 #' @importFrom yaml yaml.load_file
 #' @importFrom purrr set_names map
 #' @importFrom readr read_file
-#' @importFrom tidyr unnest
-#' @import dplyr
+#' @import dplyr tidyr
 
 # Helper functions
 
@@ -84,8 +83,10 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
     return()
   }
   yaml::yaml.load_file(pkg_list) %>%
-    enframe("repository", ".full_name") %>%
+    enframe("package", "value") %>%
+    mutate(value = map(value, bind_rows)) %>%
     unnest() %>%
-    mutate(package = stringr::str_match(.full_name, ".*/(\\w+)")[,2],
-           package = if_else(is.na(package), .full_name, package))
+    gather(variable, value, -package) %>%
+    complete(package, variable = c("version", "source", "user")) %>%
+    spread(variable, value)
 }
