@@ -82,21 +82,16 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
     warning(glue::glue("The dependencies list `{pkg_list}` was not found"), call. = FALSE)
     return()
   }
+
+  init_variables <- function(source = NA, version = "0", ...) {
+    tibble(source = source, version = version, args = list(list(...)))
+  }
+  
   yaml::yaml.load_file(pkg_list) %>%
-    enframe("package", "value") %>%
-    mutate(value = map(value, bind_rows),
-           value = map(value, gather, variable, value)) %>%
+    map(~invoke(init_variables, .)) %>%
+    enframe("package", "details") %>%
     unnest() %>%
-    mutate(test = if_else(variable %in% c("source", "version"), "mandatory", "options")) %>%
-    group_by(package, test) %>%
-    nest() %>%
-    spread(test, data) %>%
-    mutate(mandatory = map(mandatory, complete, variable = c("version", "source")), # Ensure that the variables exist
-           mandatory = map(mandatory, spread, variable, value),                     # as spread alone might not be sufficient
-           options = map(options, deframe)) %>%                                     # additional options will be supported!
-    unnest(mandatory) %>%
-    mutate(version = replace(version, is.na(version), "0"),
-           is_installed = map2_lgl(package, version, devtools:::is_installed)) %>%
-    select(package, source, version, options, is_installed)
+    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
 }
+
 
