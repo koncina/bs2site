@@ -1,8 +1,9 @@
 #' @importFrom glue glue
 #' @importFrom tibble enframe
 #' @importFrom yaml yaml.load_file
-#' @importFrom purrr set_names map
+#' @importFrom purrr set_names map map2_lgl invoke
 #' @importFrom readr read_file
+#' @importFrom assertthat assert_that
 #' @import dplyr tidyr
 
 # Helper functions
@@ -82,16 +83,15 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
     warning(glue::glue("The dependencies list `{pkg_list}` was not found"), call. = FALSE)
     return()
   }
-
-  init_variables <- function(source = NA, version = "0", ...) {
+  
+  init_variables <- function(source = "cran", version = "0", ...) {
     tibble(source = source, version = version, args = list(list(...)))
   }
-  
+
   yaml::yaml.load_file(pkg_list) %>%
+    walk(~assertthat::assert_that(is_list(.), msg = glue::glue("{pkg_list} should only contain lists"))) %>%
     map(~invoke(init_variables, .)) %>%
     enframe("package", "details") %>%
     unnest() %>%
     mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
 }
-
-
