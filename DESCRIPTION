@@ -10,7 +10,7 @@ Imports:
     glue,
     stringr,
     utils
-Depends: R (>= 3.4.2)
+Depends: R (>= 3.4.1)
 Suggests: rstudioapi
 License: LGPL-3
 Encoding: UTF-8
