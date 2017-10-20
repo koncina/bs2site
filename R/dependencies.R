@@ -77,20 +77,25 @@ scan_packages <- function(path = c("TD", "lectures", "site"), .root = ".") {
     distinct(name, package)
 }
 
-install_bioconductor <- function(package, is_installed, ...) {
-  package <- package[!is_installed]
-  if (length(package) == 0) return()
+inst_cran <- function(package, ...) {
+  message("Installing missing packages from CRAN")
+  devtools::install_cran(package, ask = FALSE)
+}
+
+
+inst_bioconductor <- function(package, ...) {
   message("Installing missing packages from Bioconductor")
   source("https://bioconductor.org/biocLite.R")
   biocLite(package, ask = FALSE)
 }
 
-install_github <- function(package, args, is_installed, ...) {
-  package <- package[!is_installed]
-  args <- args[!is_installed]
-  if (length(package) == 0) return()
+inst_github <- function(package, args, ...) {
+  # Let's get the package name into the list 
+  # paste it to username
+  # and rename username to repo
   message("Installing missing packages from Github")
-  args <- purrr::map2(package, args, ~c(repo = .x, .y))
+  args <- map2(args, package, ~map_at(., "username", paste0, "/", .y)) %>% 
+    map(~set_names(., function(x) if_else(x == "username", "repo", x)))
   purrr::invoke_map(devtools::install_github, args)
 }
 
@@ -102,10 +107,10 @@ install_missing <- function(.df, do_install = FALSE) {
     group_by(source) %>%
     nest() %>%
     deframe() %>%
-    set_names(glue::glue("install_{names(.)}")) %>%
-    iwalk(~invoke(.y, .x)) %>%
-    enframe() %>%
-    unnest() %>%
+    set_names(glue::glue("inst_{names(.)}")) %>%
+    iwalk(~invoke(.y, .x))
+    
+  .df %>%
     mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
 }
 
