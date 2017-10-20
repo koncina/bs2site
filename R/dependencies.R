@@ -2,7 +2,7 @@
 #' @importFrom glue glue
 #' @importFrom tibble enframe deframe
 #' @importFrom yaml yaml.load_file
-#' @importFrom purrr set_names map map2 map2_lgl iwalk invoke invoke_map is_list
+#' @importFrom purrr set_names map map_at map2 map2_lgl iwalk invoke invoke_map is_list
 #' @importFrom readr read_file
 #' @importFrom assertthat assert_that
 #' @importFrom utils available.packages
