@@ -1,7 +1,7 @@
 #' @importFrom glue glue
-#' @importFrom tibble enframe
+#' @importFrom tibble enframe deframe
 #' @importFrom yaml yaml.load_file
-#' @importFrom purrr set_names map map2_lgl invoke
+#' @importFrom purrr set_names map map2 map2_lgl iwalk invoke invoke_map is_list
 #' @importFrom readr read_file
 #' @importFrom assertthat assert_that
 #' @import dplyr tidyr
@@ -77,6 +77,38 @@ scan_packages <- function(path = c("TD", "lectures", "site"), .root = ".") {
     distinct(name, package)
 }
 
+install_bioconductor <- function(package, is_installed, ...) {
+  package <- package[!is_installed]
+  if (length(package) == 0) return()
+  message("Installing missing packages from Bioconductor")
+  source("https://bioconductor.org/biocLite.R")
+  biocLite(package, ask = FALSE)
+}
+
+install_github <- function(package, args, is_installed, ...) {
+  package <- package[!is_installed]
+  args <- args[!is_installed]
+  if (length(package) == 0) return()
+  message("Installing missing packages from Github")
+  args <- purrr::map2(package, args, ~c(repo = .x, .y))
+  purrr::invoke_map(devtools::install_github, args)
+}
+
+#' @export
+install_missing <- function(.df, do_install = FALSE) {
+  if (!do_install) return(.df)
+  .df %>% 
+    filter(!is_installed) %>%
+    group_by(source) %>%
+    nest() %>%
+    deframe() %>%
+    set_names(glue::glue("install_{names(.)}")) %>%
+    iwalk(~invoke(.y, .x)) %>%
+    enframe() %>%
+    unnest() %>%
+    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
+}
+
 #' @export
 wanted_pkg <- function(pkg_list = "packages.yml") {
   if (!file.exists(pkg_list)) {
@@ -89,7 +121,7 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
   }
 
   yaml::yaml.load_file(pkg_list) %>%
-    walk(~assertthat::assert_that(is_list(.), msg = glue::glue("{pkg_list} should only contain lists"))) %>%
+    walk(~assertthat::assert_that(is_list(.), msg = glue::glue("`{pkg_list}` should only contain lists"))) %>%
     map(~invoke(init_variables, .)) %>%
     enframe("package", "details") %>%
     unnest() %>%
