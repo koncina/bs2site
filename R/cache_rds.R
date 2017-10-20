@@ -7,6 +7,8 @@
 #' @importFrom stringr str_match
 #' @importFrom utils installed.packages
 
+NULL
+
 # Expanding from the first purrr::possibly only version to a more complete one:
 # Check if rstudioapi is available: we do not want the function to fail on a headless installation
 # Generate some error messages if the path cannot be retrieved...

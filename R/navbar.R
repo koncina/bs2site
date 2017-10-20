@@ -22,9 +22,9 @@ create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img) {
   input_code <- glue::glue("<a class=\"navbar-brand\" href=\"index.html\">{yaml[[\"navbar\"]][\"title\"]}</a>")
   
   output_code <- map(logo_img, ~htmltools::a(htmltools::img(src = .), class = "navbar-brand", href = "index.html")) %>%
-    htmltools::renderTags() %>%
-    .[["html"]]
-  navbar <- paste(readLines(rmarkdown:::navbar_html(yaml[["navbar"]])), collapse = "\n")
+    htmltools::renderTags()
+  output_code <- output_code[["html"]]
+  navbar <- paste(readLines(rmarkdown::navbar_html(yaml[["navbar"]])), collapse = "\n")
   
   writeLines(sub(input_code, output_code, navbar), file.path(dirname(site_yml), "_navbar.html"))
 }

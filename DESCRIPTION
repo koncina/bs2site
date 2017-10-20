@@ -4,12 +4,22 @@ Version: 0.0.0.9000
 Authors@R: person("Eric", "Koncina", email = "mail@koncina.eu", role = c("aut", "cre"))
 Description: Contains the scaffold of the website and some helper functions.
 Imports:
-    readr,
-    purrr,
+    assertthat,
+    devtools,
     dplyr,
     glue,
+    htmltools,
+    knitr,
+    magrittr,
+    purrr,
+    readr,
+    rmarkdown,
+    rlang,
     stringr,
-    utils
+    tibble,
+    tidyr,
+    utils,
+    yaml
 Depends: R (>= 3.4.1)
 Suggests: rstudioapi
 License: LGPL-3

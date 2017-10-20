@@ -4,7 +4,7 @@
 \alias{scan_packages}
 \title{Scan the site files for used packages}
 \usage{
-scan_packages(path = c("TD", "lectures", "site"), .root = ".")
+scan_packages(path = c("TD", "lectures", "site"))
 }
 \arguments{
 \item{path}{folders containing the Rmd files.}
