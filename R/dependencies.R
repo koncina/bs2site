@@ -60,7 +60,7 @@ scan_packages <- function(path = c("TD", "lectures", "site")) {
 
   # Code found here: https://www.kaggle.com/drobinson/analysis-of-r-packages-on-stack-overflow-over-time
   # Link from Aurélien
-  reg <- "(?:library|require)\\([\"\']?(.*?)[\"\']?\\)|([\\.a-zA-Z\\d]+)::[\\._a-zA-Z\\d]+[\\(|:]"
+  reg <- "(?:library|require)\\([\"\']?([\\.a-zA-Z\\d]+).*?[\"\']?\\)|([\\.a-zA-Z\\d]+)::[\\._a-zA-Z\\d]+[\\(|:]"
 
   # To avoid potential false positives, I changed the regex to expect a ( or :
   # i.e. explicit call like `package::my_function()`
