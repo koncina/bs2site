@@ -7,7 +7,7 @@
 scan_packages(path = c("TD", "lectures", "site"))
 }
 \arguments{
-\item{path}{folders containing the Rmd files.}
+\item{path}{folders containing the Rmd files (defaults to `c("TD", "lectures", "site")`).}
 }
 \value{
 path to the Rmd files
