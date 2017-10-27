@@ -46,6 +46,10 @@ get_active_files <- function(path) {
     normalizePath()
 }
 
+init_variables <- function(source = "cran", version = "0", ...) {
+  tibble(source = source, version = as.character(version), args = list(list(...)))
+}
+
 #' Scan the site files for used packages
 #'
 #' Will extract all loaded packages using `library()`, `require()` or direct calls `::`.
@@ -108,13 +112,27 @@ inst_github <- function(package, args, ...) {
 #'
 #' @param pkg_list path to the `packages.yml` file (defaults to `packages.yml`)
 #' 
+#' @param path path to the Rmd to be scanned for used packages. If `NULL`, no files are parsed.
+#' 
 #' @return a tibble with an updated `is_installed` column to confirm the success of all installations.
 #'
 #' @export
-install_missing <- function(pkg_list = "packages.yml") {
+install_missing <- function(pkg_list = "packages.yml", path = c("TD", "lectures", "site")) {
+  
   .df <- wanted_pkg(pkg_list)
+  
+  if (!is_null(path)) {
+    .df <- bs2site::scan_packages(path) %>%
+      distinct(package) %>%
+      filter(!package %in% .df$package) %>%
+      mutate(.init = list(init_variables())) %>%
+      unnest(.init) %>%
+      mutate(is_installed = map_lgl(package, devtools:::is_installed)) %>%
+      bind_rows(.df)
+  }
+
   .df %>% 
-    filter(!is_installed) %>%
+    filter(!is_installed, source != "ignore") %>%
     group_by(source) %>%
     nest() %>%
     deframe() %>%
@@ -124,9 +142,12 @@ install_missing <- function(pkg_list = "packages.yml") {
   .df <- .df %>%
     mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
   
-  .df
+  if (any(!filter(.df, source != "ignore") %>% pull(is_installed))) {
+    print(.df)
+    stop("One or more required package(s) are still not installed")
+  }
   
-  if (any(!.df$is_installed)) stop("One or more package(s) required package(s) are still not installed")
+  .df
 }
 
 #' Lists the required packages
@@ -144,10 +165,6 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
     return()
   }
   
-  init_variables <- function(source = "cran", version = "0", ...) {
-    tibble(source = source, version = as.character(version), args = list(list(...)))
-  }
-
   yaml::yaml.load_file(pkg_list) %>%
     walk(~assertthat::assert_that(is_list(.), msg = glue::glue("`{pkg_list}` should only contain lists"))) %>%
     map(~invoke(init_variables, .)) %>%

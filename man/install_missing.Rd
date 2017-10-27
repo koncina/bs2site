@@ -4,10 +4,13 @@
 \alias{install_missing}
 \title{Install missing packages}
 \usage{
-install_missing(pkg_list = "packages.yml")
+install_missing(pkg_list = "packages.yml", path = c("TD", "lectures",
+  "site"))
 }
 \arguments{
 \item{pkg_list}{path to the `packages.yml` file (defaults to `packages.yml`)}
+
+\item{path}{path to the Rmd to be scanned for used packages. If `NULL`, no files are parsed.}
 }
 \value{
 a tibble with an updated `is_installed` column to confirm the success of all installations.
