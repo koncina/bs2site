@@ -58,8 +58,7 @@ init_variables <- function(source = "cran", version = "0", ...) {
 #'
 #' @return path to the Rmd files
 #'
-#' @export
-scan_packages <- function(path = c("TD", "lectures", "site")) {
+pkg_scan <- function(path) {
   if (!all(dir.exists(path))) stop("One or more provided folders do not exist")
 
   # Code found here: https://www.kaggle.com/drobinson/analysis-of-r-packages-on-stack-overflow-over-time
@@ -73,7 +72,7 @@ scan_packages <- function(path = c("TD", "lectures", "site")) {
   get_active_files(path) %>%
     set_names() %>%
     set_names(basename) %>%
-    enframe("name", "path") %>%
+    enframe("filename", "path") %>%
     mutate(content = map(path, read_file),
            content = map(content, stringr::str_replace_all, "#.*\n", "\n"),
            packages = stringr::str_match_all(content, reg),
@@ -81,7 +80,9 @@ scan_packages <- function(path = c("TD", "lectures", "site")) {
     unnest(package, .drop = TRUE) %>%
     select(-path) %>%
     filter(!is.na(package), package != "") %>%
-    distinct(name, package)
+    distinct(filename, package) %>%
+    group_by(package) %>%
+    summarise(filename =  glue::collapse(filename, sep = ", "))
 }
 
 inst_cran <- function(package, ...) {
@@ -150,16 +151,7 @@ install_missing <- function(pkg_list = "packages.yml", path = c("TD", "lectures"
   .df
 }
 
-#' Lists the required packages
-#'
-#' The `packages.yml` file contains a list of packages that are required.
-#'
-#' @param pkg_list path to the `packages.yml` file (defaults to `packages.yml`)
-#'
-#' @return A tibble listing the package, the version, whether it is already installed or not.
-#'
-#' @export
-wanted_pkg <- function(pkg_list = "packages.yml") {
+pkg_yaml <- function(pkg_list = "packages.yml") {
   if (!file.exists(pkg_list)) {
     warning(glue::glue("The dependencies list `{pkg_list}` was not found"), call. = FALSE)
     return()
@@ -169,6 +161,62 @@ wanted_pkg <- function(pkg_list = "packages.yml") {
     walk(~assertthat::assert_that(is_list(.), msg = glue::glue("`{pkg_list}` should only contain lists"))) %>%
     map(~invoke(init_variables, .)) %>%
     enframe("package", "details") %>%
-    unnest() %>%
-    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
+    unnest() #%>%
+    #mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
+}
+
+# Adapted from devtools:::pkg_source() 
+get_pkg_source <- function(pkg) {
+  if (length(pkg) != 1) stop("expecting the name of a single package...", call. = FALSE)
+  desc <- suppressWarnings(utils::packageDescription(pkg))
+  
+  version <- "0"
+  args <- list()
+  
+  if (!is.list(desc)) {
+    source <- NA_character_
+  } else if (identical(desc$Priority, "base")) {
+    source <- "base"
+    version <- desc$Version
+  } else if (!is.null(desc$biocViews)) {
+    source <- "bioconductor"
+    version <- desc$Version
+  } else if (!is.null(desc$GithubSHA1)) {
+    source <- "github"
+    version <- desc$Version
+    args <- list(
+      username = desc$GithubUsername,
+      ref = desc$GithubRef # or desc$GithubSHA1 to be more conservative...
+    )
+  } else if (!is.null(desc$Repository) &&  desc$Repository == "CRAN") {
+    source <- "cran"
+    version <- desc$Version
+  } else {
+    if (!is.null(desc$Version)) warning("unsupported remote")
+    source <- NA_character_
+    args <- list()
+  }
+  tibble(source = source, version = version, args = list(args))
+}
+
+#' Lists the required packages
+#'
+#' The `packages.yml` file contains a list of packages that are required.
+#'
+#' @param path character vector pointing to the root of the bs2 repository containing the optional `packages.yml` file.
+#' 
+#' @param install boolean telling whether to install missing packages (defaults to `FALSE`)
+#' 
+#' @param scan boolean whether to scan source files for used packages (defaults to `TRUE`)
+#' 
+#' @param rmd_dir character vector containing the subfolders with the Rmd source files.
+#'
+#' @return A tibble listing the package, the version, whether it is already installed or not.
+#'
+#' @export
+list_pkg <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+  .df <- full_join(pkg_yaml(file.path(path, "packages.yml")),
+                   pkg_scan(file.path(path, rmd_dir)),
+                   by = "package")
+  .df
 }
