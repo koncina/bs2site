@@ -107,50 +107,6 @@ inst_github <- function(package, args, ...) {
   purrr::invoke_map(devtools::install_github, args)
 }
 
-#' Install missing packages
-#'
-#' Once the required packages (defined in `packages.yml`) are listed and checked, installs the missing ones.
-#'
-#' @param pkg_list path to the `packages.yml` file (defaults to `packages.yml`)
-#' 
-#' @param path path to the Rmd to be scanned for used packages. If `NULL`, no files are parsed.
-#' 
-#' @return a tibble with an updated `is_installed` column to confirm the success of all installations.
-#'
-#' @export
-install_missing <- function(pkg_list = "packages.yml", path = c("TD", "lectures", "site")) {
-  
-  .df <- wanted_pkg(pkg_list)
-  
-  if (!is_null(path)) {
-    .df <- bs2site::scan_packages(path) %>%
-      distinct(package) %>%
-      filter(!package %in% .df$package) %>%
-      mutate(.init = list(init_variables())) %>%
-      unnest(.init) %>%
-      mutate(is_installed = map_lgl(package, devtools:::is_installed)) %>%
-      bind_rows(.df)
-  }
-
-  .df %>% 
-    filter(!is_installed, source != "ignore") %>%
-    group_by(source) %>%
-    nest() %>%
-    deframe() %>%
-    set_names(glue::glue("inst_{names(.)}")) %>%
-    iwalk(~invoke(.y, .x))
-    
-  .df <- .df %>%
-    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
-  
-  if (any(!filter(.df, source != "ignore") %>% pull(is_installed))) {
-    print(.df)
-    stop("One or more required package(s) are still not installed")
-  }
-  
-  .df
-}
-
 pkg_yaml <- function(pkg_list = "packages.yml") {
   if (!file.exists(pkg_list)) {
     warning(glue::glue("The dependencies list `{pkg_list}` was not found"), call. = FALSE)
@@ -210,13 +166,51 @@ get_pkg_source <- function(pkg) {
 #' @param scan boolean whether to scan source files for used packages (defaults to `TRUE`)
 #' 
 #' @param rmd_dir character vector containing the subfolders with the Rmd source files.
-#'
+#' 
 #' @return A tibble listing the package, the version, whether it is already installed or not.
 #'
 #' @export
-list_pkg <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
-  .df <- full_join(pkg_yaml(file.path(path, "packages.yml")),
-                   pkg_scan(file.path(path, rmd_dir)),
-                   by = "package")
+pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+  .df <- pkg_yaml(file.path(path, "packages.yml"))
+  if (isTRUE(scan)) .df <- full_join(.df, pkg_scan(file.path(path, rmd_dir)),
+                                     by = "package")
   .df
+                   
+}
+
+#' @export
+pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+  missing <- pkg_list(path = path, rmd_dir = rmd_dir, scan = scan) %>%
+    mutate(version = replace(version, is.na(version), 0),
+           source = replace(source, is.na(source), "cran"),
+           is_installed = map2_lgl(package, version, devtools:::is_installed)) %>% 
+    filter(!is_installed,
+           source %in% c("github", "bioconductor", "cran"))
+  
+  not_on_cran <- missing %>%
+    filter(source == "cran") %>% 
+    anti_join(bs2site:::get_available_packages(), by = "package")
+  
+  
+  if (nrow(not_on_cran) > 0) {
+    not_on_cran <- not_on_cran %>%
+      select(package, filename) %>% 
+      deframe() %>% 
+      imap(~glue::glue("  {.y} (detected in {.x})")) %>%
+      glue::collapse(sep = "\n")
+    
+    stop(glue::glue("One or more packages are not available on CRAN\n{not_on_cran}"), call. = FALSE)
+  }
+  
+  if (!isTRUE(install)) {
+    warning("Not installing missing packages: adjust install argument")
+    return(missing)
+  }
+  
+  missing %>%
+    group_by(source) %>%
+    nest() %>%
+    deframe() %>%
+    set_names(glue::glue("inst_{names(.)}")) %>%
+    iwalk(~invoke(.y, .x))
 }
