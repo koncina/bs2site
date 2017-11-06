@@ -2,14 +2,14 @@
 #' @importFrom glue glue
 #' @importFrom tibble enframe deframe
 #' @importFrom yaml yaml.load_file
-#' @importFrom purrr set_names map map_at map2 map2_lgl iwalk invoke invoke_map is_list
+#' @importFrom purrr set_names map map_at map2 map2_lgl iwalk imap invoke invoke_map is_list
 #' @importFrom readr read_file
 #' @importFrom assertthat assert_that
 #' @importFrom utils available.packages
 #' @import dplyr tidyr
 
 NULL
-utils::globalVariables(c("content", "packages", "package", "name", "is_installed", "Package", "Version", "biocLite"))
+utils::globalVariables(c("content", "packages", "package", "name", "filename", "is_installed", "Package", "Version", "biocLite"))
 # Helper functions
 
 # Walk only if a condition is met
