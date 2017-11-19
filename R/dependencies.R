@@ -2,7 +2,7 @@
 #' @importFrom glue glue
 #' @importFrom tibble enframe deframe
 #' @importFrom yaml yaml.load_file
-#' @importFrom purrr set_names map map_at map2 map2_lgl iwalk imap invoke invoke_map is_list
+#' @importFrom purrr set_names map map_at map2 map2_lgl iwalk imap invoke invoke_map is_list is_empty is_character
 #' @importFrom readr read_file
 #' @importFrom assertthat assert_that
 #' @importFrom utils available.packages
@@ -180,6 +180,13 @@ pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD",
 
 #' @export
 pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+  
+  # Checking if install is a character vector referring to an environmental variable
+  if (is_character(install, 1)) {
+    if (toupper(Sys.getenv(install)) %in% c("1", "T", "TRUE", "YES")) install <- TRUE
+    else install <- FALSE
+  }
+  
   missing <- pkg_list(path = path, rmd_dir = rmd_dir, scan = scan) %>%
     mutate(version = replace(version, is.na(version), 0),
            source = replace(source, is.na(source), "cran"),
@@ -191,7 +198,6 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
     filter(source == "cran") %>% 
     anti_join(bs2site:::get_available_packages(), by = "package")
   
-  
   if (nrow(not_on_cran) > 0) {
     not_on_cran <- not_on_cran %>%
       select(package, filename) %>% 
@@ -202,15 +208,23 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
     stop(glue::glue("One or more packages are not available on CRAN\n{not_on_cran}"), call. = FALSE)
   }
   
-  if (!isTRUE(install)) {
-    warning("Not installing missing packages: adjust install argument")
-    return(missing)
-  }
+  if (isTRUE(install)) {
+    missing %>%
+      group_by(source) %>%
+      nest() %>%
+      deframe() %>%
+      set_names(glue::glue("inst_{names(.)}")) %>%
+      iwalk(~invoke(.y, .x))
+    }
   
-  missing %>%
-    group_by(source) %>%
-    nest() %>%
-    deframe() %>%
-    set_names(glue::glue("inst_{names(.)}")) %>%
-    iwalk(~invoke(.y, .x))
+  # Final check: is everything available?
+  missing <- missing %>%
+    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed)) %>%
+    filter(!is_installed) %>%
+    pull(package) %>%
+    glue::collapse(sep = ", ")
+  
+  if (!is_empty(missing)) {
+    stop(glue::glue("The following packages are missing: {missing}\n Try to adjust install = TRUE"), call. = FALSE)
+  }
 }
