@@ -1,0 +1,10 @@
+Name: Deploy website
+Description: Run the gitlab job deploying the website to the production server.
+Binding: deploy_production
+Interactive: true
+
+Name: Gitlab settings
+Description: Set the private token, gitlab url and project id.
+Binding: deploy_config
+Interactive: true
+
