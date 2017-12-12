@@ -76,6 +76,23 @@ gitlab_joblist <- function(gitlab_url, private_token, project_id) {
     filter(pipeline.id == max(pipeline.id))
 }
 
+# Get the trigger token for the project (if more than one is available, let it fail)
+gitlab_trigger <- function(gitlab_url, private_token, project_id) {
+  resp <- glue::glue("{gitlab_url}/api/v4/projects/{project_id}/triggers") %>%
+    curl_fetch_memory(gitlab_handle(private_token)) %>%
+    expect_status(200)
+
+  token <- rawToChar(resp[["content"]]) %>%
+    jsonlite::fromJSON(flatten = TRUE)
+  
+  token <- token[["token"]]
+  
+  if (length(token) != 1) stop(glue::glue("Can only handle a single token (found {nrow(trigger)})"))
+
+  token
+  
+}
+
 # Status codes adapted from http://docs.gitlab.com/ce/api/#status-codes
 gitlab_status <- function(status_code) {
   tibble::tribble(
