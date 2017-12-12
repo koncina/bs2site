@@ -5,10 +5,12 @@ Authors@R: person("Eric", "Koncina", email = "mail@koncina.eu", role = c("aut", 
 Description: Contains the scaffold of the website and some helper functions.
 Imports:
     assertthat,
+    curl,
     devtools,
     dplyr,
     glue,
     htmltools,
+    jsonlite,
     knitr,
     magrittr,
     purrr,
@@ -21,7 +23,7 @@ Imports:
     utils,
     yaml
 Depends: R (>= 3.4.1)
-Suggests: rstudioapi
+Suggests: rstudioapi, miniUI, shiny
 License: LGPL-3
 Encoding: UTF-8
 LazyData: true

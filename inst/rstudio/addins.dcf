@@ -5,6 +5,6 @@ Interactive: true
 
 Name: Gitlab settings
 Description: Set the private token, gitlab url and project id.
-Binding: deploy_config
+Binding: gitlab_config
 Interactive: true
 
