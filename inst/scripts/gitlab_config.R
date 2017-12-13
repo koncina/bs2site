@@ -10,8 +10,8 @@ local({
                shiny::wellPanel(
                  my_textInput("gitlab_url", "Gitlab url"),
                  my_textInput("gitlab_private_token", "Private token"),
-                 miniButtonBlock(
-                   actionButton("connect", "Connect to gitlab", primary = TRUE)
+                 miniUI::miniButtonBlock(
+                   shiny::actionButton("connect", "Connect to gitlab", primary = TRUE)
                  )
                )
         ),
