@@ -43,7 +43,7 @@ local({
     })
     
     shiny::observeEvent(input$gitlab_project_id, {
-      jobs <- gitlab_joblist(input$gitlab_url, input$gitlab_private_token, input$gitlab_project_id)[["name"]]
+      jobs <- gitlab_jobs(input$gitlab_url, input$gitlab_private_token, input$gitlab_project_id)[["name"]]
       
       shiny::updateSelectInput(session, "gitlab_deploy_job",
                         choices = jobs)
