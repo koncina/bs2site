@@ -1,28 +1,33 @@
 local({
-  my_textInput <- function(inputId, label) {
-    shiny::textInput(inputId, label, value = rstudioapi::getPersistentValue(inputId))
-  }
+  if (RStudio.Version()[["version"]] < "1.1.57") stop("RStudio version >= 1.1.57 is required", call. = FALSE)
+  
+  sys.source(system.file("scripts", "private_key.R", package = "bs2site", mustWork = TRUE))
+  
+  # Testing if it's FALSE and falling back to TRUE otherwise.
+  use_keyring <- !rlang::is_false(as.logical(rstudioapi::getPersistentValue("gitlab_keyring")))
+  
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Set gitlab settings"),
     miniUI::miniContentPanel(
       shiny::fluidRow(
         shiny::column(6,
-               shiny::wellPanel(
-                 my_textInput("gitlab_url", "Gitlab url"),
-                 my_textInput("gitlab_private_token", "Private token"),
-                 miniUI::miniButtonBlock(
-                   shiny::actionButton("connect", "Connect to gitlab", primary = TRUE)
-                 )
-               )
+                      shiny::wellPanel(
+                        shiny::textInput("gitlab_url", "Gitlab url", value = rstudioapi::getPersistentValue("gitlab_url")),
+                        shiny::passwordInput("gitlab_private_token", "Private token", value = get_private_token(rstudioapi::getPersistentValue("gitlab_url"), use_keyring)),
+                        shiny::checkboxInput("gitlab_keyring", "Use system credential store (recommended, requires the keyring package)", use_keyring),
+                        miniUI::miniButtonBlock(
+                          shiny::actionButton("connect", "Connect to gitlab", primary = TRUE)
+                        )
+                      )
         ),
         shiny::column(6,
-               shiny::wellPanel(
-                 shiny::selectInput("gitlab_project_id", label = "Select the project", 
-                             choices = rstudioapi::getPersistentValue("gitlab_project_id")),
-                 shiny::selectInput("gitlab_deploy_job", label = "Select the job", 
-                             choices = rstudioapi::getPersistentValue("gitlab_deploy_job")),
-                 shiny::checkboxInput("gitlab_disable_confirm", "Disable confirmation dialog", isTRUE(as.logical(rstudioapi::getPersistentValue("gitlab_disable_confirm"))))
-               )
+                      shiny::wellPanel(
+                        shiny::selectInput("gitlab_project_id", label = "Select project", 
+                                           choices = rstudioapi::getPersistentValue("gitlab_project_id")),
+                        shiny::selectInput("gitlab_deploy_job", label = "Select deploy job", 
+                                           choices = rstudioapi::getPersistentValue("gitlab_deploy_job")),
+                        shiny::checkboxInput("gitlab_disable_confirm", "Disable confirmation dialog", isTRUE(as.logical(rstudioapi::getPersistentValue("gitlab_disable_confirm"))))
+                      )
         )
       )
     )
@@ -38,7 +43,7 @@ local({
         return()
       }
       shiny::updateSelectInput(session, "gitlab_project_id",
-                        choices = projects$result)
+                               choices = projects$result)
       
     })
     
@@ -46,12 +51,16 @@ local({
       jobs <- gitlab_jobs(input$gitlab_url, input$gitlab_private_token, input$gitlab_project_id)[["name"]]
       
       shiny::updateSelectInput(session, "gitlab_deploy_job",
-                        choices = jobs)
+                               choices = jobs)
     }, ignoreInit = TRUE)
     
     shiny::observeEvent(input$done, {
-      map(purrr::set_names(c("gitlab_url", "gitlab_project_id", "gitlab_private_token", "gitlab_deploy_job", "gitlab_disable_confirm")), 
+      set_private_token(input$gitlab_url, input$gitlab_private_token, use_keyring = input$gitlab_keyring)
+      
+      map(purrr::set_names(c("gitlab_url", "gitlab_project_id", "gitlab_keyring", "gitlab_deploy_job", "gitlab_disable_confirm")), 
           ~rstudioapi::setPersistentValue(.x, input[[.x]]))
+      
+      
       shiny::stopApp()
     })
     

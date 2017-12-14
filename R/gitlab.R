@@ -1,3 +1,13 @@
+#' @import curl
+#' @importFrom glue glue
+#' @import jsonlite
+#' @importFrom rlang set_names
+#' @importFrom purrr map map_lgl is_null pluck
+
+NULL
+
+utils::globalVariables(c("pipeline.id", "stage", "status", "artifacts_file.filename", "artifacts_file.size", "return_value", "owner.id", "description"))
+
 # Some helper functions to interact with the Gitlab API
 
 # Status codes adapted from http://docs.gitlab.com/ce/api/#status-codes
@@ -46,12 +56,12 @@ gitlab_curl <- function(url, private_token, status_code = 200, post = FALSE, for
     if (!is_list(forms)) stop("forms should be provided as named list members")
     curl::handle_setopt(h, customrequest = "POST")
     invoke(curl::handle_setform, c(h, forms))
-    }
+  }
   
   curl_fetch_memory(url, h) %>%
     expect_status(status_code) %>%
     with(rawToChar(content)) %>%
-    jsonlite::fromJSON(flatten = TRUE) 
+    jsonlite::fromJSON(flatten = TRUE)
 }
 
 # Get the gitlab project IDs
@@ -75,11 +85,14 @@ gitlab_trigger <- function(gitlab_url, private_token, project_id, trigger_descri
   
   # Get the current user id associated to the private token
   user_id <- glue::glue("{gitlab_url}/api/v4/user") %>%
-    bs2site:::gitlab_curl(private_token) %>%
+    gitlab_curl(private_token) %>%
     pluck("id")
   
-  token <- glue::glue("{gitlab_url}/api/v4/projects/{project_id}/triggers") %>%
-    bs2site:::gitlab_curl(private_token)  %>%
+  response <-  gitlab_curl(glue::glue("{gitlab_url}/api/v4/projects/{project_id}/triggers"), private_token) 
+  
+  if (purrr::is_empty(response)) return(NA) # No token is defined
+  
+  response %>%
     filter(owner.id == user_id, description == trigger_description) %>%
     pull(token)
   
