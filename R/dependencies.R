@@ -196,7 +196,7 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
   
   not_on_cran <- missing %>%
     filter(source == "cran") %>% 
-    anti_join(bs2site:::get_available_packages(), by = "package")
+    anti_join(get_available_packages(), by = "package")
   
   if (nrow(not_on_cran) > 0) {
     not_on_cran <- not_on_cran %>%
