@@ -8,3 +8,8 @@ Description: Set the private token, gitlab url and project id.
 Binding: gitlab_config
 Interactive: true
 
+Name: Clean build
+Description: Rebuild the site without using the cache (using a pipeline trigger).
+Binding: clean_build
+Interactive: true
+

@@ -33,34 +33,31 @@ expect_status <- function(response, status_code) {
 
 # Set the curl handle to authentificate with the gitlab API
 gitlab_handle <- function(private_token) {
-  my_handle <- curl::new_handle()
-  handle_setheaders(my_handle, .list = list(`PRIVATE-TOKEN` = private_token))
-  my_handle
+  curl::new_handle() %>%
+    handle_setheaders(.list = list(`PRIVATE-TOKEN` = private_token))
 }
 
 #
 
-gitlab_get <- function(url, private_token, status_code = 200) {
-  curl_fetch_memory(url, gitlab_handle(private_token)) %>%
+gitlab_curl <- function(url, private_token, status_code = 200, post = FALSE, forms = list()) {
+  
+  h <- gitlab_handle(private_token)
+  if (isTRUE(post)) {
+    if (!is_list(forms)) stop("forms should be provided as named list members")
+    curl::handle_setopt(h, customrequest = "POST")
+    invoke(curl::handle_setform, c(h, forms))
+    }
+  
+  curl_fetch_memory(url, h) %>%
     expect_status(status_code) %>%
     with(rawToChar(content)) %>%
     jsonlite::fromJSON(flatten = TRUE) 
 }
 
-gitlab_post <- function(url, private_token, status_code = 200) {
-  h <- gitlab_handle(private_token)
-  handle_setopt(h, customrequest = "POST")
-  
-  curl_fetch_memory(url, h) %>%
-    expect_status(status_code) %>%
-    with(rawToChar(content)) %>%
-    jsonlite::fromJSON(flatten = TRUE)
-}
-
 # Get the gitlab project IDs
 gitlab_projects <- function(gitlab_url, private_token) {
   glue::glue("{gitlab_url}/api/v4/projects?membership=true") %>%
-    gitlab_get(private_token) %>%
+    gitlab_curl(private_token) %>%
     mutate(name = glue::glue("{name} ({id})")) %>%
     select(name, id) %>%
     deframe()
@@ -69,19 +66,31 @@ gitlab_projects <- function(gitlab_url, private_token) {
 # Get the jobs listed in the last used pipeline (highest ID)
 gitlab_jobs <- function(gitlab_url, private_token, project_id) {
   glue::glue("{gitlab_url}/api/v4/projects/{project_id}/jobs") %>%
-    gitlab_get(private_token) %>%
+    gitlab_curl(private_token) %>%
     filter(pipeline.id == max(pipeline.id))
 }
 
 # Get the trigger token for the project (if more than one is available, let it fail)
-gitlab_trigger <- function(gitlab_url, private_token, project_id) {
+gitlab_trigger <- function(gitlab_url, private_token, project_id, trigger_description = "bs2site") {
+  
+  # Get the current user id associated to the private token
+  user_id <- glue::glue("{gitlab_url}/api/v4/user") %>%
+    bs2site:::gitlab_curl(private_token) %>%
+    pluck("id")
+  
   token <- glue::glue("{gitlab_url}/api/v4/projects/{project_id}/triggers") %>%
-    gitlab_get(private_token)  %>%
+    bs2site:::gitlab_curl(private_token)  %>%
+    filter(owner.id == user_id, description == trigger_description) %>%
     pull(token)
   
-  if (length(token) != 1) stop(glue::glue("Can only handle a single token (found {length(token)})"))
+  if (length(token) > 1) warning(glue::glue("Found multiple matching tokens ({length(token)}): using the first"), call. = FALSE)
   
-  token
+  token[1]
+}
+
+gitlab_create_trigger <- function(gitlab_url, private_token, project_id, trigger_description = "bs2site") {
+  glue::glue("{gitlab_url}/api/v4/projects/{project_id}/triggers") %>%
+    gitlab_curl(private_token, status_code = 201, post = TRUE, forms = list(description = trigger_description))
 }
 
 # non interactive function to interact with the gitlab API
@@ -101,4 +110,7 @@ gitlab_manual_job <- function(gitlab_url, private_token, project_id, deploy_jobn
       any(is.na(build[["artifacts_file.filename"]]), is.na(build[["artifacts_file.size"]]))) {
     stop("Artifact is missing. Try to rebuild the website", call. = FALSE)
   }
+  
+  glue::glue("{gitlab_url}/api/v4/projects/{project_id}/jobs/{job_id}/play") %>%
+    gitlab_curl(private_token, post = TRUE)
 }
