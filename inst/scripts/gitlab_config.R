@@ -50,7 +50,7 @@ local({
     })
     
     shiny::observeEvent(input$gitlab_project_id, {
-      jobs <- gitlab_jobs(input$gitlab_url, input$gitlab_private_token, input$gitlab_project_id)[["name"]]
+      jobs <- possibly(~pull(gitlab_jobs(..1, ..2, ..3), "name"), otherwise = "")(input$gitlab_url, input$gitlab_private_token, input$gitlab_project_id)
       
       shiny::updateSelectInput(session, "gitlab_deploy_job",
                                choices = jobs)
