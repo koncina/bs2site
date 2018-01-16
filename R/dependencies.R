@@ -110,7 +110,7 @@ inst_github <- function(package, args, ...) {
 pkg_yaml <- function(pkg_list = "packages.yml") {
   if (!file.exists(pkg_list)) {
     warning(glue::glue("The dependencies list `{pkg_list}` was not found"), call. = FALSE)
-    return()
+    return(tibble(package = character(0), source = character(0), version = double(0)))
   }
   
   yaml::yaml.load_file(pkg_list) %>%
