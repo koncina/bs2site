@@ -5,7 +5,7 @@
 \title{Lists the required packages}
 \usage{
 pkg_list(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD",
-  "lectures", "site"), git_is_dev = TRUE)
+  "lectures", "site"))
 }
 \arguments{
 \item{path}{character vector pointing to the root of the bs2 repository containing the optional `packages.yml` file.}

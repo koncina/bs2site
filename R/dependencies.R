@@ -170,7 +170,7 @@ get_pkg_source <- function(pkg) {
 #' @return A tibble listing the package, the version, whether it is already installed or not.
 #'
 #' @export
-pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site")) {
   .df <- pkg_yaml(file.path(path, "packages.yml"))
   if (isTRUE(scan)) .df <- full_join(.df, pkg_scan(file.path(path, rmd_dir)),
                                      by = "package")
@@ -179,7 +179,7 @@ pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD",
 }
 
 #' @export
-pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), git_is_dev = TRUE) {
+pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site")) {
   
   # Checking if install is a character vector referring to an environmental variable
   if (is_character(install, 1)) {
