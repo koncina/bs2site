@@ -23,8 +23,13 @@ Imports:
     utils,
     yaml
 Depends: R (>= 3.4.1)
-Suggests: rstudioapi, miniUI, shiny
+Suggests: rstudioapi, miniUI, shiny,
+    knitr,
+    rmarkdown
 License: LGPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr
+URL: https://github.com/koncina/bs2site
+BugReports: https://github.com/koncina/bs2site/issues

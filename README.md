@@ -1,0 +1,71 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+bs2site
+=======
+
+**Don't expect this package to work outside of our specific application**
+
+The bs2site package is used to build our teaching websites ([biostat2.uni.lu](https://biostat2.uni.lu) or [rworkshop.uni.lu](https://rworkshop.uni.lu)). These websites combine different Rmarkdown formats in order to include practicals and lectures.
+
+Our websites are built on gitlab using continuous integration (CI). `bs2site` helps to:
+
+-   identify which packages are used in active documents (not starting with `_`)
+    -   tries to install missing packages from cran.
+    -   installs packages hosted on github or bioconductor which were defined in a `package.yml` file.
+-   add a branding logo in the navbar header.
+-   save and load objects saved as `rds` files in a standardised location (*i.e.* used as a cache synced with git LFS).
+-   provide an Rstudio addin to interact with the gitlab instance
+    -   configure the access to gitlab and store the private token in the system credential store (using the `keyring` package)
+    -   deploy the website (production: manual action)
+    -   build the website without using the CI cache (rebuild)
+
+Installation
+------------
+
+You can install bs2site from github with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("koncina/bs2site")
+```
+
+Folder structure
+----------------
+
+The folder structure of the website source directory is the following:
+
+    ├── lectures
+    │   ├── img
+    │   ├── lecture_01.Rmd
+    │   └── ...
+    ├── practicals
+    │   ├── img
+    │   ├── TD_01.Rmd
+    │   └── ...
+    ├── site
+    │   ├── img
+    │   ├── index.Rmd
+    │   └── ...
+    └── ...
+
+### Lectures
+
+Each lecture should be placed in the `lectures` folder and named as `lecture_xx.Rmd` where `xx` is a zero padded number. The format used to render the lectures is [iosp](https://github.com/koncina/iosp).
+
+### Practicals
+
+Each practical should be placed in the `practicals` folder and named as `TD_xx.Rmd` where `xx` is a zero padded number. The format used to render practicals is [unilur](https://github.com/koncina/unilur).
+
+### Main site pages
+
+All remaining pages to setup the website are placed in the `site` folder.
+
+Generating the site
+-------------------
+
+Configure the project to use the `Makefile` which will render the website in the `docs` output folder.
+
+Helper functions
+----------------
+
+The `bs2site` package contains some helper functions used to render the site. Have a look at the references on `http://koncina.github.io/bs2site/`.
