@@ -5,7 +5,7 @@
 \title{Create a navbar with the branding logos}
 \usage{
 create_navbar(site_yml = file.path("site", "site.yml"), logo_img,
-  show_title = FALSE)
+  show_title = FALSE, relative_to = NULL)
 }
 \arguments{
 \item{site_yml}{path to the `_site.yml` file.}
@@ -13,6 +13,8 @@ create_navbar(site_yml = file.path("site", "site.yml"), logo_img,
 \item{logo_img}{vector containing the path to the logo file(s).}
 
 \item{show_title}{boolean. If `TRUE`, the title will be shown next to the logo.}
+
+\item{relative_to}{relative path where main site files are located (`file.path(path, yaml_link)`): _e.g._ if navbar is used in a subfolder, adjust path to "..".}
 }
 \description{
 Reads the _site.yml to render the _navbar.html and replaces the navbar title by the branding logos.

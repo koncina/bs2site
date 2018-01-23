@@ -15,15 +15,17 @@ NULL
 #' 
 #' @param show_title boolean. If `TRUE`, the title will be shown next to the logo.
 #'
+#' @param relative_to relative path where main site files are located (`file.path(path, yaml_link)`): _e.g._ if navbar is used in a subfolder, adjust path to "..".
+#'
 #' @return NULL
 #'
 #' @export
-create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img, show_title = FALSE) {
+create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img, show_title = FALSE, relative_to = NULL) {
   yaml <- rmarkdown:::yaml_load_file_utf8(site_yml)
   
   input_code <- glue::glue("<a class=\"navbar-brand\" href=\"index.html\">{yaml[[\"navbar\"]][\"title\"]}</a>")
   
-  output_code <- map(logo_img, ~htmltools::img(src = .)) %>%
+  output_code <- map(logo_img, ~htmltools::img(src = ifelse(is.null(relative_to), ., file.path(relative_to, .)))) %>%
     htmltools::span() %>%
     htmltools::a(if_else(isTRUE(show_title), yaml[["navbar"]]["title"], NULL), class = "navbar-brand", href = "index.html") %>%
     htmltools::renderTags()
@@ -31,6 +33,12 @@ create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img, sh
   output_code <- output_code[["html"]]
   navbar <- paste(readLines(rmarkdown::navbar_html(yaml[["navbar"]])), collapse = "\n")
   
-  writeLines(sub(input_code, output_code, navbar), file.path(dirname(site_yml), "_navbar.html"))
+  navbar <- sub(input_code, output_code, navbar)
+  
+  if (!is.null(relative_to)) {
+    navbar <- stringr::str_replace_all(navbar, "href=\"", glue::glue("href=\"{relative_to}/")) # TODO: try to fix this in the yaml
+  }
+  
+  writeLines(navbar, file.path(dirname(site_yml), "_navbar.html"))
 }
 
