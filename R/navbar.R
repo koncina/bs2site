@@ -25,7 +25,7 @@ create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img, sh
   
   output_code <- map(logo_img, ~htmltools::img(src = .)) %>%
     htmltools::span() %>%
-    htmltools::a(if_else(isTRUE(keep_text), yaml[["navbar"]]["title"], NULL), class = "navbar-brand", href = "index.html") %>%
+    htmltools::a(if_else(isTRUE(show_title), yaml[["navbar"]]["title"], NULL), class = "navbar-brand", href = "index.html") %>%
     htmltools::renderTags()
   
   output_code <- output_code[["html"]]
