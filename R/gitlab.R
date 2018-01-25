@@ -61,8 +61,7 @@ gitlab_curl <- function(url, private_token, status_code = 200, post = FALSE, for
   curl_fetch_memory(url, h) %>%
     expect_status(status_code) %>%
     with(rawToChar(content)) %>%
-    jsonlite::fromJSON(flatten = TRUE) %>%
-    as_tibble()
+    jsonlite::fromJSON(flatten = TRUE)
 }
 
 # Get the gitlab project IDs
