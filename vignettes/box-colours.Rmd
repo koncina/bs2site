@@ -1,0 +1,60 @@
+---
+title: "Box colours"
+author: "Eric Koncina"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    css: box.css
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(dplyr)
+library(purrr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+<style>
+
+```{r, results = 'asis', echo = FALSE}
+cat(bs2site:::create_box_css(path = NULL))
+```
+
+</style>
+
+In order to use a standardised set of box colours, we defined the following box types:
+
+```{r, echo = FALSE}
+bs2site:::get_box_colours() %>%
+  knitr::kable()
+```
+
+## Colour preview
+
+```{r, echo = FALSE}
+draw_box <- function(colour) {
+  htmltools::h3("Header") %>% htmltools::div(class = glue::glue("box {colour}"),
+                                             "Some text using", htmltools::br(),
+                                             htmltools::code(colour)
+                                             )
+}
+```
+
+```{r, echo = FALSE, results = "asis"}
+colours <- pull(bs2site:::get_box_colours(), name)
+
+glue::glue("bg-{colours}") %>%
+  purrr::map(draw_box) %>%
+  htmltools::div(class = "box-container") %>%
+  htmltools::doRenderTags()
+```
+
+## Include or update the colours in your site
+
+The colours are defined in a `css` file. I you're using a site configured as recommended here, simply call the `use_box_colours()` function to create the file and update the `lectures/_output.yml` file.

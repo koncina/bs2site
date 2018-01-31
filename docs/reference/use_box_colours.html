@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Lists the required packages — pkg_list • bs2site</title>
+<title>Use box colours defined for the rworkshop or biostat2 site — use_box_colours • bs2site</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -95,50 +95,21 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Lists the required packages</h1>
+    <h1>Use box colours defined for the rworkshop or biostat2 site</h1>
     </div>
 
     
-    <p>The `packages.yml` file contains a list of packages that are required.</p>
+    <p>Generates the `css/box.css` file and changes the css setting in `lectures/_output.yml` if required.</p>
     
 
-    <pre class="usage"><span class='fu'>pkg_list</span>(<span class='kw'>path</span> <span class='kw'>=</span> <span class='st'>"."</span>, <span class='kw'>install</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>scan</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>rmd_dir</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"TD"</span>,
-  <span class='st'>"lectures"</span>, <span class='st'>"site"</span>))</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>path</th>
-      <td><p>character vector pointing to the root of the bs2 repository containing the optional `packages.yml` file.</p></td>
-    </tr>
-    <tr>
-      <th>install</th>
-      <td><p>boolean telling whether to install missing packages (defaults to `FALSE`)</p></td>
-    </tr>
-    <tr>
-      <th>scan</th>
-      <td><p>boolean whether to scan source files for used packages (defaults to `TRUE`)</p></td>
-    </tr>
-    <tr>
-      <th>rmd_dir</th>
-      <td><p>character vector containing the subfolders with the Rmd source files.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A tibble listing the package, the version, whether it is already installed or not.</p>
-    
+    <pre class="usage"><span class='fu'>use_box_colours</span>()</pre>
+        
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-          </ul>
+                </ul>
 
   </div>
 </div>

@@ -1,0 +1,35 @@
+.box-container {
+  display: inline-block;
+  width: 100%;
+}
+
+.box > h3 {
+  line-height: 35px;
+  font-size: 25px;
+  margin: -15px -15px 10px -15px;
+  padding-left: 10px;
+  padding-bottom: 5px;
+  padding-top: 0px;
+}
+
+.box {
+  display: block;
+  float: left;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 25px;
+  height: 150px;
+  width: 250px;
+  padding: 15px;
+  overflow: hidden;
+  border-radius: 5px;
+  border: 1px solid lightgray;
+  box-shadow: 10px 10px 8px 1px rgba(0, 0, 0, 0.2), 1px 3px 3px 2px rgba(0, 0, 0, 0.5);
+}
+
+.box code {
+  color: #c7254e;
+  padding: 0 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
