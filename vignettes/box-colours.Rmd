@@ -32,16 +32,21 @@ In order to use a standardised set of box colours, we defined the following box 
 
 ```{r, echo = FALSE}
 bs2site:::get_box_colours() %>%
+  select(name, description) %>%
   knitr::kable()
 ```
 
 ## Colour preview
 
+### Default boxes
+
+To generate the above described box colours, just add the class: `### Header {.box-4 .intro}`
+
 ```{r, echo = FALSE}
-draw_box <- function(colour) {
-  htmltools::h3("Header") %>% htmltools::div(class = glue::glue("box {colour}"),
+draw_box <- function(colour, outline = FALSE) {
+  htmltools::h3("Header") %>% htmltools::div(class = glue::glue("box {colour} {if_else(outline, 'outline', '')}"),
                                              "Some text using", htmltools::br(),
-                                             htmltools::code(colour)
+                                             htmltools::code(paste0(colour, if_else(outline, ' outline', '')))
                                              )
 }
 ```
@@ -49,12 +54,21 @@ draw_box <- function(colour) {
 ```{r, echo = FALSE, results = "asis"}
 colours <- pull(bs2site:::get_box_colours(), name)
 
-glue::glue("bg-{colours}") %>%
-  purrr::map(draw_box) %>%
+purrr::map(colours, draw_box) %>%
+  htmltools::div(class = "box-container") %>%
+  htmltools::doRenderTags()
+```
+
+### Outline boxes
+
+Outline boxes exhibit a white background and only use the header/border colour. Just add the `.outline` class to your box (_e.g._ `### Header {.box-4 .intro .outline}`)
+
+```{r, echo = FALSE, results = "asis"}
+purrr::map(colours, draw_box, outline = TRUE) %>%
   htmltools::div(class = "box-container") %>%
   htmltools::doRenderTags()
 ```
 
 ## Include or update the colours in your site
 
-The colours are defined in a `css` file. I you're using a site configured as recommended here, simply call the `use_box_colours()` function to create the file and update the `lectures/_output.yml` file.
+The colours are defined in a `css` file. I you're using a site configured as expected by the `bs2site` package, simply run the `use_box_colours()` function to create (or update) the file. A link to the css file is automatically added to the `lectures/_output.yml` file.

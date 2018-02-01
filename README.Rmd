@@ -29,6 +29,7 @@ Our websites are built on gitlab using continuous integration (CI). `bs2site` he
     + configure the access to gitlab and store the private token in the system credential store (using the `keyring` package)
     + deploy the website (production: manual action)
     + build the website without using the CI cache (rebuild)
+- define standard box themes that are reused in the different lectures.
 
 ## Installation
 
@@ -50,12 +51,22 @@ The folder structure of the website source directory is the following:
 │   └── ...
 ├── practicals
 │   ├── img
-│   ├── TD_01.Rmd
+│   ├── practical_01.Rmd
 │   └── ...
-├── site
+├── projects
 │   ├── img
-│   ├── index.Rmd
+│   ├── project_01.Rmd
 │   └── ...
+├── css
+│   ├── lecture.css
+│   ├── practical.css
+│   ├── site.css
+│   └── ...
+├── img
+├── Makefile
+├── index.Rmd
+├── lectures.Rmd
+├── practicals.Rmd
 └── ...
 ```
 
@@ -63,19 +74,14 @@ The folder structure of the website source directory is the following:
 
 Each lecture should be placed in the `lectures` folder and named as `lecture_xx.Rmd` where `xx` is a zero padded number. The format used to render the lectures is [iosp](https://github.com/koncina/iosp).
 
-### Practicals
+### Practicals / Projects
 
-Each practical should be placed in the `practicals` folder and named as `TD_xx.Rmd` where `xx` is a zero padded number. The format used to render practicals is [unilur](https://github.com/koncina/unilur).
+Each practical / project should be placed in the `practicals` / `project` folder and named as `practical_xx.Rmd` / `project_xx.Rmd` where `xx` is a zero padded number. The format used to render practicals / projects is [unilur](https://github.com/koncina/unilur).
 
 ### Main site pages
 
-All remaining pages to setup the website are placed in the `site` folder.
+All remaining pages to setup the website are placed in the root folder.
 
 ## Generating the site
 
 Configure the project to use the `Makefile` which will render the website in the `docs` output folder.
-
-## Helper functions
-
-The `bs2site` package contains some helper functions used to render the site. Have a look at the references on `http://koncina.github.io/bs2site/`.
-

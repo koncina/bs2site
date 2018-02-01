@@ -118,38 +118,43 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 │   └── ...
 ├── practicals
 │   ├── img
-│   ├── TD_01.Rmd
+│   ├── practical_01.Rmd
 │   └── ...
-├── site
+├── projects
 │   ├── img
-│   ├── index.Rmd
+│   ├── project_01.Rmd
 │   └── ...
+├── css
+│   ├── lecture.css
+│   ├── practical.css
+│   ├── site.css
+│   └── ...
+├── img
+├── Makefile
+├── lectures.Rmd
+├── practicals.Rmd
+├── index.Rmd
 └── ...</code></pre>
 <div id="lectures" class="section level3">
 <h3 class="hasAnchor">
 <a href="#lectures" class="anchor"></a>Lectures</h3>
 <p>Each lecture should be placed in the <code>lectures</code> folder and named as <code>lecture_xx.Rmd</code> where <code>xx</code> is a zero padded number. The format used to render the lectures is <a href="https://github.com/koncina/iosp">iosp</a>.</p>
 </div>
-<div id="practicals" class="section level3">
+<div id="practicals-projects" class="section level3">
 <h3 class="hasAnchor">
-<a href="#practicals" class="anchor"></a>Practicals</h3>
-<p>Each practical should be placed in the <code>practicals</code> folder and named as <code>TD_xx.Rmd</code> where <code>xx</code> is a zero padded number. The format used to render practicals is <a href="https://github.com/koncina/unilur">unilur</a>.</p>
+<a href="#practicals-projects" class="anchor"></a>Practicals / Projects</h3>
+<p>Each practical / project should be placed in the <code>practicals</code> / <code>project</code> folder and named as <code>practical_xx.Rmd</code> / <code>project_xx.Rmd</code> where <code>xx</code> is a zero padded number. The format used to render practicals / projects is <a href="https://github.com/koncina/unilur">unilur</a>.</p>
 </div>
 <div id="main-site-pages" class="section level3">
 <h3 class="hasAnchor">
 <a href="#main-site-pages" class="anchor"></a>Main site pages</h3>
-<p>All remaining pages to setup the website are placed in the <code>site</code> folder.</p>
+<p>All remaining pages to setup the website are placed in the root folder.</p>
 </div>
 </div>
 <div id="generating-the-site" class="section level2">
 <h2 class="hasAnchor">
 <a href="#generating-the-site" class="anchor"></a>Generating the site</h2>
 <p>Configure the project to use the <code>Makefile</code> which will render the website in the <code>docs</code> output folder.</p>
-</div>
-<div id="helper-functions" class="section level2">
-<h2 class="hasAnchor">
-<a href="#helper-functions" class="anchor"></a>Helper functions</h2>
-<p>The <code>bs2site</code> package contains some helper functions used to render the site. Have a look at the references on <code>http://koncina.github.io/bs2site/</code>.</p>
 </div>
 </div>
 </div>
