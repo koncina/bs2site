@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     css: box.css
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Box colours}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
