@@ -13,7 +13,7 @@ use_box_colours <- function() {
   if (!all(file.exists(file.path("lectures", "_output.yml")), dir.exists("css"))) stop("Run this function from the root of a bs2site formatted site", call. = FALSE)
   create_box_css(overwrite = TRUE)
   output_yaml <- yaml::read_yaml(file.path("lectures", "_output.yml"))
-  output_yaml[["iosp::ioslides_plus"]][["css"]] <- unique(c(output_yaml[["iosp::ioslides_plus"]][["css"]], "css/box.css"))
+  output_yaml[["iosp::ioslides_plus"]][["css"]] <- unique(c(output_yaml[["iosp::ioslides_plus"]][["css"]], "../css/box.css"))
   yaml::write_yaml(output_yaml, file.path("lectures", "_output.yml"))
 }
 
