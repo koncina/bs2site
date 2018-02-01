@@ -19,11 +19,12 @@ use_box_colours <- function() {
 
 get_box_colours <- function() {
   tribble(~name, ~bg, ~header_bg, ~text, ~header_text, ~description,
-          "warning", "#ffad99", "#991f00", NULL, NULL, "learning objectives/introduction",
-          "intro", "#adebad", "#1f7a1f", NULL, NULL, "advice",
-          "blue", "#99d6ff", "#005c99", NULL, NULL, "code examples",
-          "advice", "#ffec8b", "#eeb422", NULL, NULL, "error / warning",
-          "code", "#2b557a", "#002240", NULL, NULL, "practicals / exercises")
+          "intro", "#adebad", "#1f7a1f", NULL, NULL, "learning objectives/introduction",
+          "warning", "#ffad99", "#991f00", NULL, NULL, "error / warning",
+          "advice", "#ffec8b", "#eeb422", NULL, NULL, "advice",
+          "code", "#2b557a", "#002240", NULL, NULL, "code examples",
+          "practical", "#CAE1FF", "#65707F", NULL, NULL, "practicals / exercises") %>%
+    mutate(.prefix = "")
 }
 
 create_box_css <- function(path = file.path("css", "box.css"), overwrite = FALSE) {
@@ -32,7 +33,8 @@ create_box_css <- function(path = file.path("css", "box.css"), overwrite = FALSE
     select(-description) %>%
     transpose() %>%
     purrr::invoke_map(.f = iosp::add_box_colour) %>%
-    glue::collapse(sep = "\n")
+    glue::collapse(sep = "\n") %>%
+    paste(".box.outline {\n\tbackground-color: white;\n}\n")
 
   #css <- purrr::invoke_map(iosp::add_box_colour, colours) %>%
   #  glue::collapse(sep = "\n")
