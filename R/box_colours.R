@@ -34,11 +34,8 @@ create_box_css <- function(path = file.path("css", "box.css"), overwrite = FALSE
     transpose() %>%
     purrr::invoke_map(.f = iosp::add_box_colour) %>%
     glue::collapse(sep = "\n") %>%
-    paste(".box.outline {\n\tbackground-color: white;\n}\n")
+    paste("\n.box.outline {\n\tbackground-color: white;\n\tcolor: black;\n}\n")
 
-  #css <- purrr::invoke_map(iosp::add_box_colour, colours) %>%
-  #  glue::collapse(sep = "\n")
-  
   if (is.null(path)) return(css)
   if (file.exists(path)) {
     if (isTRUE(overwrite)) {
