@@ -1,0 +1,77 @@
+---
+title: "Slide background"
+author: "Eric Koncina"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    css: box.css
+vignette: >
+  %\VignetteIndexEntry{Box colours}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(dplyr)
+library(purrr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Associate a slide to a class
+
+In IOSlides, a class defined in a level 2 header is associated to the `article` tag by default. For instance, a background colour definition is such a class will not cover the complete slide. To redirect the class to the `slide` tag it is possible to use the `slide-class` attribute or define a classname starting with `slide-` (which will act as a shortcut to the `slide-class` attribute).
+
+#### `slide-class` attribute
+
+For example, define a `my_class` css rule:
+
+```{css, eval = FALSE}
+.my-class {
+  background-color: red;
+}
+```
+
+To associate `my-class` to the slide:
+
+```
+## Slide header {slide-class="my-class"}
+```
+
+#### `.slide-*` class shortcut
+
+Alternatively, if you define a class starting with `.slide-` and associate it to a level 2 header, the class will be applied to the slide tag.
+
+```{css, eval = FALSE}
+.slide-my-class {
+  background-color: red;
+}
+```
+
+```
+## Slide header {.slide-my-class}
+```
+
+In addition, the [box themes definitions](box-colours.html) already contain a class defining the background of a slide (`.slide-intro`, `.slide-practical` ...):
+
+```
+## Slide header {.slide-intro}
+```
+
+### Define a background image or use a hexadecimal colour code
+
+The slide can be customised to use a background colour or image. This possibility was introduced in IOSlides with [rmarkdown >= 1.7](https://github.com/rstudio/rmarkdown/pull/687).
+
+To use a background image, define the `data-background` attribute with the path to the image (url or relative path).
+
+```
+## Slide header {data-background="my_image.jpeg"}
+```
+
+You can also use a hexadecimal colour code:
+
+```
+## Slide header {data-background="#FF0000"}
+```
