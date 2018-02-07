@@ -48,6 +48,9 @@
 <li>
       <a href="../articles/box-colours.html">Box colours</a>
     </li>
+    <li>
+      <a href="../articles/slide-background.html">Slide background</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -76,7 +79,7 @@
       <h1>Box colours</h1>
                         <h4 class="author">Eric Koncina</h4>
             
-            <h4 class="date">2018-02-01</h4>
+            <h4 class="date">2018-02-07</h4>
           </div>
 
     
@@ -86,9 +89,8 @@
 
 /* intro colour */
 
-.intro {
+.slide-intro {
   background-color: #ADEBAD;
-  color: #000000;
 }
 
 .intro a {
@@ -101,6 +103,8 @@
 }
 
 .box.intro {
+  background-color: #ADEBAD;
+  color: #000000;
   border: 2px solid #1F7A1F;
 }
 
@@ -114,6 +118,7 @@ blockquote.intro::before {
 }
 
 blockquote.intro {
+  background-color: #ADEBAD;
   color: #000000;
   border-color: #1F7A1F;
 }
@@ -131,11 +136,11 @@ blockquote.intro {
   color: #FFFFFF !important;
 }
 
-slide.intro > hgroup > h2 {
+slide.slide-intro > hgroup > h2 {
   color: rgba(0, 0, 0, 0.8);
 }
 
-slide.intro > hgroup > h3 {
+slide.slide-intro > hgroup > h3 {
   color: rgba(0, 0, 0, 0.7);
 }
 
@@ -146,8 +151,6 @@ slide.intro > hgroup > h3 {
 .intro .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-
-
 
 .intro .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1);
@@ -162,9 +165,8 @@ slide.intro > hgroup > h3 {
 }
 /* warning colour */
 
-.warning {
+.slide-warning {
   background-color: #FFAD99;
-  color: #000000;
 }
 
 .warning a {
@@ -177,6 +179,8 @@ slide.intro > hgroup > h3 {
 }
 
 .box.warning {
+  background-color: #FFAD99;
+  color: #000000;
   border: 2px solid #991F00;
 }
 
@@ -190,6 +194,7 @@ blockquote.warning::before {
 }
 
 blockquote.warning {
+  background-color: #FFAD99;
   color: #000000;
   border-color: #991F00;
 }
@@ -207,11 +212,11 @@ blockquote.warning {
   color: #FFFFFF !important;
 }
 
-slide.warning > hgroup > h2 {
+slide.slide-warning > hgroup > h2 {
   color: rgba(0, 0, 0, 0.8);
 }
 
-slide.warning > hgroup > h3 {
+slide.slide-warning > hgroup > h3 {
   color: rgba(0, 0, 0, 0.7);
 }
 
@@ -222,8 +227,6 @@ slide.warning > hgroup > h3 {
 .warning .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-
-
 
 .warning .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1);
@@ -238,9 +241,8 @@ slide.warning > hgroup > h3 {
 }
 /* advice colour */
 
-.advice {
+.slide-advice {
   background-color: #FFEC8B;
-  color: #000000;
 }
 
 .advice a {
@@ -253,6 +255,8 @@ slide.warning > hgroup > h3 {
 }
 
 .box.advice {
+  background-color: #FFEC8B;
+  color: #000000;
   border: 2px solid #EEB422;
 }
 
@@ -266,6 +270,7 @@ blockquote.advice::before {
 }
 
 blockquote.advice {
+  background-color: #FFEC8B;
   color: #000000;
   border-color: #EEB422;
 }
@@ -283,11 +288,11 @@ blockquote.advice {
   color: #000000 !important;
 }
 
-slide.advice > hgroup > h2 {
+slide.slide-advice > hgroup > h2 {
   color: rgba(0, 0, 0, 0.8);
 }
 
-slide.advice > hgroup > h3 {
+slide.slide-advice > hgroup > h3 {
   color: rgba(0, 0, 0, 0.7);
 }
 
@@ -298,8 +303,6 @@ slide.advice > hgroup > h3 {
 .advice .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-
-
 
 .advice .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1);
@@ -314,9 +317,8 @@ slide.advice > hgroup > h3 {
 }
 /* code colour */
 
-.code {
+.slide-code {
   background-color: #2B557A;
-  color: #FFFFFF;
 }
 
 .code a {
@@ -329,6 +331,8 @@ slide.advice > hgroup > h3 {
 }
 
 .box.code {
+  background-color: #2B557A;
+  color: #FFFFFF;
   border: 2px solid #002240;
 }
 
@@ -342,6 +346,7 @@ blockquote.code::before {
 }
 
 blockquote.code {
+  background-color: #2B557A;
   color: #FFFFFF;
   border-color: #002240;
 }
@@ -359,11 +364,11 @@ blockquote.code {
   color: #FFFFFF !important;
 }
 
-slide.code > hgroup > h2 {
+slide.slide-code > hgroup > h2 {
   color: rgba(255, 255, 255, 0.8);
 }
 
-slide.code > hgroup > h3 {
+slide.slide-code > hgroup > h3 {
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -374,8 +379,6 @@ slide.code > hgroup > h3 {
 .code .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-
-
 
 .code .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(255, 255, 255, 0.1);
@@ -390,9 +393,8 @@ slide.code > hgroup > h3 {
 }
 /* practical colour */
 
-.practical {
+.slide-practical {
   background-color: #CAE1FF;
-  color: #000000;
 }
 
 .practical a {
@@ -405,6 +407,8 @@ slide.code > hgroup > h3 {
 }
 
 .box.practical {
+  background-color: #CAE1FF;
+  color: #000000;
   border: 2px solid #65707F;
 }
 
@@ -418,6 +422,7 @@ blockquote.practical::before {
 }
 
 blockquote.practical {
+  background-color: #CAE1FF;
   color: #000000;
   border-color: #65707F;
 }
@@ -435,11 +440,11 @@ blockquote.practical {
   color: #FFFFFF !important;
 }
 
-slide.practical > hgroup > h2 {
+slide.slide-practical > hgroup > h2 {
   color: rgba(0, 0, 0, 0.8);
 }
 
-slide.practical > hgroup > h3 {
+slide.slide-practical > hgroup > h3 {
   color: rgba(0, 0, 0, 0.7);
 }
 
@@ -450,8 +455,6 @@ slide.practical > hgroup > h3 {
 .practical .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
 }
-
-
 
 .practical .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1);
