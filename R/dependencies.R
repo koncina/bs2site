@@ -40,8 +40,8 @@ get_available_packages <- function(repos = "https://cran.rstudio.com") {
 }
 
 # List all Rmd files in path not starting with an underscore (hidden)
-get_active_files <- function(path) {
-  list.files(path, pattern = ".*\\.Rmd", full.names = TRUE, recursive = TRUE) %>%
+get_active_files <- function(path, recursive = TRUE) {
+  list.files(path, pattern = ".*\\.Rmd", full.names = TRUE, recursive = recursive) %>%
     str_subset_inv(".*/_.*") %>%
     normalizePath()
 }
@@ -54,11 +54,13 @@ init_variables <- function(source = "cran", version = "0", ...) {
 #'
 #' Will extract all loaded packages using `library()`, `require()` or direct calls `::`.
 #'
-#' @param path folders containing the Rmd files (defaults to `c("TD", "lectures", "site")`).
+#' @param path folders containing the Rmd files.
+#' 
+#' @param recursive logical should Rmd files be searched recursively
 #'
 #' @return path to the Rmd files
 #'
-pkg_scan <- function(path) {
+pkg_scan <- function(path, recursive = TRUE) {
   if (!all(dir.exists(path))) stop("One or more provided folders do not exist")
 
   # Code found here: https://www.kaggle.com/drobinson/analysis-of-r-packages-on-stack-overflow-over-time
@@ -69,7 +71,7 @@ pkg_scan <- function(path) {
   # i.e. explicit call like `package::my_function()`
   #  or a knitr format like `package::format:`
 
-  get_active_files(path) %>%
+  get_active_files(path, recursive = recursive) %>%
     set_names() %>%
     set_names(basename) %>%
     enframe("filename", "path") %>%
@@ -167,19 +169,21 @@ get_pkg_source <- function(pkg) {
 #' 
 #' @param rmd_dir character vector containing the subfolders with the Rmd source files.
 #' 
+#' @param recursive logical should Rmd files be searched recursively
+#' 
 #' @return A tibble listing the package, the version, whether it is already installed or not.
 #'
 #' @export
-pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site")) {
+pkg_list <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), recursive = TRUE) {
   .df <- pkg_yaml(file.path(path, "packages.yml"))
-  if (isTRUE(scan)) .df <- full_join(.df, pkg_scan(file.path(path, rmd_dir)),
+  if (isTRUE(scan)) .df <- full_join(.df, pkg_scan(file.path(path, rmd_dir), recursive = recursive),
                                      by = "package")
   .df
                    
 }
 
 #' @export
-pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site")) {
+pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD", "lectures", "site"), recursive = TRUE) {
   
   # Checking if install is a character vector referring to an environmental variable
   if (is_character(install, 1)) {
@@ -187,7 +191,7 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
     else install <- FALSE
   }
   
-  missing <- pkg_list(path = path, rmd_dir = rmd_dir, scan = scan) %>%
+  missing <- pkg_list(path = path, rmd_dir = rmd_dir, scan = scan, recursive = recursive) %>%
     mutate(version = replace(version, is.na(version), 0),
            source = replace(source, is.na(source), "cran"),
            is_installed = map2_lgl(package, version, devtools:::is_installed)) %>% 

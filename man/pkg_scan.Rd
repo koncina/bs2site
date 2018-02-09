@@ -4,10 +4,12 @@
 \alias{pkg_scan}
 \title{Scan the site files for used packages}
 \usage{
-pkg_scan(path)
+pkg_scan(path, recursive = TRUE)
 }
 \arguments{
-\item{path}{folders containing the Rmd files (defaults to `c("TD", "lectures", "site")`).}
+\item{path}{folders containing the Rmd files.}
+
+\item{recursive}{logical should Rmd files be searched recursively}
 }
 \value{
 path to the Rmd files

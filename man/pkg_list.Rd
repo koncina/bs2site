@@ -5,7 +5,7 @@
 \title{Lists the required packages}
 \usage{
 pkg_list(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD",
-  "lectures", "site"))
+  "lectures", "site"), recursive = TRUE)
 }
 \arguments{
 \item{path}{character vector pointing to the root of the bs2 repository containing the optional `packages.yml` file.}
@@ -15,6 +15,8 @@ pkg_list(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("TD",
 \item{scan}{boolean whether to scan source files for used packages (defaults to `TRUE`)}
 
 \item{rmd_dir}{character vector containing the subfolders with the Rmd source files.}
+
+\item{recursive}{logical should Rmd files be searched recursively}
 }
 \value{
 A tibble listing the package, the version, whether it is already installed or not.
