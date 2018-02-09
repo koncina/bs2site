@@ -92,7 +92,7 @@ gitlab_trigger <- function(gitlab_url, private_token, project_id, trigger_descri
   
   if (purrr::is_empty(response)) return(NA) # No token is defined
   
-  response %>%
+  token <- response %>%
     filter(owner.id == user_id, description == trigger_description) %>%
     pull(token)
   
