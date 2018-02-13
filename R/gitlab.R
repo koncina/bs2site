@@ -77,7 +77,8 @@ gitlab_projects <- function(gitlab_url, private_token) {
 gitlab_jobs <- function(gitlab_url, private_token, project_id) {
   glue::glue("{gitlab_url}/api/v4/projects/{project_id}/jobs") %>%
     gitlab_curl(private_token) %>%
-    filter(pipeline.id == max(pipeline.id))
+    filter(ref == "master") %>%
+    top_n(1, pipeline.id)
 }
 
 # Get the trigger token for the project (if more than one is available, let it fail)
