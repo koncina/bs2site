@@ -9,8 +9,15 @@
 #' @import dplyr tidyr
 
 NULL
-utils::globalVariables(c("content", "packages", "package", "name", "filename", "is_installed", "Package", "Version", "biocLite"))
+utils::globalVariables(c("content", "packages", "package", "name", "filename", "is_pkg_installed", "Package", "Version", "biocLite"))
 # Helper functions
+
+# Adjusting devtools:::is_installed
+# don't use NULL for lib.loc: installation of a loaded library might not be detected
+is_installed <- function(pkg, version = 0) {
+  installed_version <- tryCatch(utils::packageVersion(pkg, lib.loc = .libPaths()), error = function(e) NA)
+  !is.na(installed_version) && installed_version >= version
+}
 
 # Walk only if a condition is met
 walk_if <- function(.x, .condition, .f, ...) {
@@ -119,8 +126,7 @@ pkg_yaml <- function(pkg_list = "packages.yml") {
     walk(~assertthat::assert_that(is_list(.), msg = glue::glue("`{pkg_list}` should only contain lists"))) %>%
     map(~invoke(init_variables, .)) %>%
     enframe("package", "details") %>%
-    unnest() #%>%
-    #mutate(is_installed = map2_lgl(package, version, devtools:::is_installed))
+    unnest()
 }
 
 # Adapted from devtools:::pkg_source() 
@@ -194,8 +200,8 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
   missing <- pkg_list(path = path, rmd_dir = rmd_dir, scan = scan, recursive = recursive) %>%
     mutate(version = replace(version, is.na(version), 0),
            source = replace(source, is.na(source), "cran"),
-           is_installed = map2_lgl(package, version, devtools:::is_installed)) %>% 
-    filter(!is_installed,
+           is_pkg_installed = map2_lgl(package, version, is_installed)) %>% 
+    filter(!is_pkg_installed,
            source %in% c("github", "bioconductor", "cran"))
   
   not_on_cran <- missing %>%
@@ -223,8 +229,8 @@ pkg_missing <- function(path = ".", install = FALSE, scan = TRUE, rmd_dir = c("T
   
   # Final check: is everything available?
   missing <- missing %>%
-    mutate(is_installed = map2_lgl(package, version, devtools:::is_installed)) %>%
-    filter(!is_installed) %>%
+    mutate(is_pkg_installed = map2_lgl(package, version, is_installed)) %>%
+    filter(!is_pkg_installed) %>%
     pull(package) %>%
     glue::collapse(sep = ", ")
   
