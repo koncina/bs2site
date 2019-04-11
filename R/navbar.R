@@ -21,7 +21,7 @@ NULL
 #'
 #' @export
 create_navbar <- function(site_yml = file.path("site", "site.yml"), logo_img, show_title = FALSE, relative_to = NULL) {
-  yaml <- rmarkdown:::yaml_load_file_utf8(site_yml)
+  yaml <- rmarkdown:::yaml_load_file(site_yml)
   
   input_code <- glue::glue("<a class=\"navbar-brand\" href=\"index.html\">{yaml[[\"navbar\"]][\"title\"]}</a>")
   
