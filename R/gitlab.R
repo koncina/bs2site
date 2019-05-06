@@ -116,7 +116,7 @@ gitlab_manual_job <- function(gitlab_url, private_token, project_id, deploy_jobn
     top_n(1, id) %>%
     pull(id)
   
-  build <- top_n(filter(ci_pipeline, stage == "preview", ref == "master", status != "canceled"), 1, id)
+  build <- top_n(filter(ci_pipeline, stage == "build", ref == "master", status != "canceled"), 1, id)
   
   if (build[["status"]] != "success") stop(glue::glue("Build is missing with status {build[['status']]}"))
   
