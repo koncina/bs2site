@@ -99,11 +99,9 @@ inst_cran <- function(package, ...) {
   devtools::install_cran(package, ask = FALSE)
 }
 
-
 inst_bioconductor <- function(package, ...) {
   message("Installing missing packages from Bioconductor")
-  source("https://bioconductor.org/biocLite.R")
-  biocLite(package, ask = FALSE)
+  BiocManager::install(package, ask = FALSE)
 }
 
 inst_github <- function(package, args, ...) {

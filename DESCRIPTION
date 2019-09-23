@@ -5,6 +5,7 @@ Authors@R: person("Eric", "Koncina", email = "mail@koncina.eu", role = c("aut", 
 Description: Contains the scaffold of the website and some helper functions.
 Imports:
     assertthat,
+    BiocManager,
     curl,
     devtools,
     dplyr,
